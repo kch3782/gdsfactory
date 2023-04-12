@@ -1,4 +1,4 @@
-# gdsfactory 6.72.4
+# gdsfactory 6.81.0
 
 [![docs](https://github.com/gdsfactory/gdsfactory/actions/workflows/pages.yml/badge.svg)](https://gdsfactory.github.io/gdsfactory/)
 [![PyPI](https://img.shields.io/pypi/v/gdsfactory)](https://pypi.org/project/gdsfactory/)
@@ -104,6 +104,15 @@ gf install klayout-integration
 
 - Users can `pip install gdsfactory --upgrade`
 - Developers can `git pull` on the repository you downloaded and installed on your computer.
+
+
+This code will tell you which gdsfactory you are using
+```
+import gdsfactory as gf
+
+gf.config.print_version()
+```
+
 
 ### Install gdsfactory plugins
 

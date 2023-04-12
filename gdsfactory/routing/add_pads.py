@@ -35,7 +35,7 @@ def add_pads_bot(
     pad_port_labels: Optional[Tuple[str, ...]] = None,
     pad: ComponentSpec = pad_rectangular,
     bend: ComponentSpec = "wire_corner",
-    straight_separation: float = 15.0,
+    straight_separation: Optional[None] = None,
     pad_spacing: Union[float, str] = "pad_spacing",
     **kwargs,
 ) -> Component:
@@ -53,7 +53,7 @@ def add_pads_bot(
         pad_port_labels: pad list of labels.
         pad: spec for route terminations.
         bend: bend spec.
-        straight_separation: from edge to edge.
+        straight_separation: from wire edge to edge. Defaults to xs.width+xs.gap
         pad_spacing: in um. Defaults to pad_spacing constant from the PDK.
 
     Keyword Args:
@@ -87,12 +87,15 @@ def add_pads_bot(
     """
     component_new = Component()
     component = gf.get_component(component)
+    component_name = component_name or component.name
 
     pad_spacing = gf.get_constant(pad_spacing)
     cref = component_new << component
     ports = [cref[port_name] for port_name in port_names] if port_names else None
     ports = ports or select_ports(cref.ports)
     xs = gf.get_cross_section(cross_section)
+
+    straight_separation = straight_separation or xs.width + xs.gap
 
     pad_component = gf.get_component(pad)
     if pad_port_name not in pad_component.ports:

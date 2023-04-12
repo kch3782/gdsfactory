@@ -14,7 +14,7 @@ ports:
     width: 0.5
   o2:
     center:
-    - 81.2
+    - 81.12
     - 0.625
     layer:
     - 1
@@ -26,7 +26,7 @@ ports:
     width: 0.5
   o3:
     center:
-    - 81.2
+    - 81.12
     - -0.625
     layer:
     - 1
@@ -44,6 +44,7 @@ settings:
     port_e1_combiner: o3
   child: null
   default:
+    add_optical_ports_arms: false
     bend:
       function: bend_euler
     combiner: null
@@ -67,6 +68,7 @@ settings:
     straight_y: null
     with_splitter: true
   full:
+    add_optical_ports_arms: false
     bend:
       function: bend_euler
     combiner:

@@ -31,6 +31,7 @@ def ring_section_based(
     start_angle: Optional[float] = 10.0,
     drop_cross_section: Optional[CrossSectionSpec] = None,
     bus_cross_section: CrossSectionSpec = "strip",
+    ang_res: Optional[int] = 0.1,
 ) -> gf.Component:
     """Returns a ring made of the specified cross sections.
 
@@ -60,6 +61,7 @@ def ring_section_based(
         drop_cross_section: cross section for the drop port. If not indicated, we assume
             it is the same as init_cross_section.
         bus_cross_section: cross section for the bus waveguide.
+        ang_res: angular resolution to draw the bends for each section
     """
 
     c = gf.Component()
@@ -155,13 +157,23 @@ def ring_section_based(
 
     for key, xsec in cross_sections.items():
         ang = cross_sections_angles[key]
-        b = bend_circular(angle=ang, with_bbox=False, cross_section=xsec, radius=radius)
+        b = bend_circular(
+            angle=ang,
+            with_bbox=False,
+            cross_section=xsec,
+            radius=radius,
+            npoints=np.round(ang / ang_res) + 1 if ang_res is not None else None,
+        )
 
         sections_dict[key] = (b, "o1", "o2")
 
     if start_cross_section is not None:
         b = bend_circular(
-            angle=start_angle, with_bbox=False, cross_section=start_xs, radius=radius
+            angle=start_angle,
+            with_bbox=False,
+            cross_section=start_xs,
+            radius=radius,
+            npoints=np.round(ang / ang_res) + 1 if ang_res is not None else None,
         )
         if "0" in sections_dict:
             raise ValueError(
@@ -175,6 +187,7 @@ def ring_section_based(
             with_bbox=False,
             cross_section=gf.get_cross_section(drop_cross_section),
             radius=radius,
+            npoints=np.round(ang / ang_res) + 1 if ang_res is not None else None,
         )
         if "1" in sections_dict:
             raise ValueError(
@@ -267,17 +280,18 @@ def ring_section_based(
     s_add.ymax = ring_guide_add.ymin - gap[0] + s.ysize / 2 - input_xs_width / 2
 
     if add_drop:
-        s.mirror((0, 1))
+        # s.mirror((0, 1))
         s_drop = c << s
+        s_drop.mirror_y()
         s_drop.x = r.x
         s_drop.ymin = ring_guide_drop.ymax + gap[1] - s.ysize / 2 + input_xs_width / 2
 
     # Add ports
-    c.add_port("o1", port=s_add.ports["o1"])
-    c.add_port("o2", port=s_add.ports["o2"])
+    c.add_port("o1", port=s_add.ports["o1"], orientation=180)
+    c.add_port("o2", port=s_add.ports["o2"], orientation=0)
     if add_drop:
-        c.add_port("o3", port=s_drop.ports["o1"])
-        c.add_port("o4", port=s_drop.ports["o2"])
+        c.add_port("o3", port=s_drop.ports["o1"], orientation=180)
+        c.add_port("o4", port=s_drop.ports["o2"], orientation=0)
 
     return c
 
